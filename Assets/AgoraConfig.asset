@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be014cc94fcb904fa3e24b1887a3dc0, type: 3}
+  m_Name: AgoraConfig
+  m_EditorClassIdentifier: 
+  appId: 20b46c1adefd4859863cd6fa6372cc44
+  token: 007eJxTYPjnaMnIJBJ8t6nwkmmVsw13AkvevfMcnZt56otDvZfO5VZgMDJIMjFLNkxMSU1LMbEwtbQwM05OMUtLNDM2N0pONjFJc72a3hDIyMB65RszIwMEgvgCDM4ZiXl5qTlhmSmp+c6JOTkMDADOFyE+
+  channelName: ChannelVideoCall
