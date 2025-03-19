@@ -30,42 +30,29 @@ public class VideoCallEventHandler : IRtcEngineEventHandler
     {
         Debug.Log("User joined: " + uid);
 
-        // Kiểm tra xem GameObject đã tồn tại chưa
-        GameObject remoteVideoObj = GameObject.Find("RemoteVideo_" + uid);
-        if (remoteVideoObj == null)
+        GameObject remoteVideoObj = new GameObject("RemoteVideo_" + uid);
+        remoteVideoObj.transform.SetParent(manager.GetLocalVideoTransform());
+
+        RawImage remoteImage = remoteVideoObj.AddComponent<RawImage>();
+        RectTransform rectTransform = remoteImage.rectTransform;
+
+        if (uid == manager.ScreenUid)
         {
-            remoteVideoObj = new GameObject("RemoteVideo_" + uid);
-            remoteVideoObj.transform.SetParent(manager.GetLocalVideoTransform());
-
-            RawImage remoteImage = remoteVideoObj.AddComponent<RawImage>();
-            RectTransform rectTransform = remoteImage.rectTransform;
-
-            if (uid == manager.ScreenUid)
-            {
-                // Đặt chia sẻ màn hình toàn màn hình
-                rectTransform.anchorMin = new Vector2(0, 0);
-                rectTransform.anchorMax = new Vector2(1, 1);
-                remoteVideoObj.transform.SetSiblingIndex(0); // Đặt dưới cùng
-            }
-            else
-            {
-                // Đặt video từ xa ở góc trên bên phải
-                rectTransform.anchorMin = new Vector2(0.75f, 0.75f);
-                rectTransform.anchorMax = new Vector2(1.0f, 1.0f);
-                remoteVideoObj.transform.SetAsLastSibling(); // Đặt lên trên
-            }
-            rectTransform.offsetMin = new Vector2(0, 0);
-            rectTransform.offsetMax = new Vector2(0, 0);
-
-            remoteImage.uvRect = new Rect(1, 0, 1, -1);
-
-            VideoSurface videoSurface = remoteVideoObj.AddComponent<VideoSurface>();
-            videoSurface.SetForUser(uid, manager.GetChannelName(), VIDEO_SOURCE_TYPE.VIDEO_SOURCE_REMOTE);
-            videoSurface.SetEnable(true);
+            rectTransform.anchorMin = new Vector2(0.25f, 0.25f);
+            rectTransform.anchorMax = new Vector2(0.75f, 0.75f);
         }
         else
         {
-            Debug.Log("GameObject cho UID " + uid + " đã tồn tại.");
+            rectTransform.anchorMin = new Vector2(0.75f, 0.75f);
+            rectTransform.anchorMax = new Vector2(1.0f, 1.0f);
         }
+        rectTransform.offsetMin = new Vector2(0, 0);
+        rectTransform.offsetMax = new Vector2(0, 0);
+
+        remoteImage.uvRect = new Rect(1, 0, 1, -1);
+
+        VideoSurface videoSurface = remoteVideoObj.AddComponent<VideoSurface>();
+        videoSurface.SetForUser(uid, manager.GetChannelName(), VIDEO_SOURCE_TYPE.VIDEO_SOURCE_REMOTE);
+        videoSurface.SetEnable(true);
     }
 }
