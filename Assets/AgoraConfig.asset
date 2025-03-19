@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: AgoraConfig
   m_EditorClassIdentifier: 
   appId: 20b46c1adefd4859863cd6fa6372cc44
-  token: 007eJxTYJh8ZIbVy295mUE68Y9LXwfrnDs0jXNO2tOjxx0+Nk5eaMKmwGBkkGRilmyYmJKalmJiYWppYWacnGKWlmhmbG6UnGxicu36jfSGQEYGv10mLIwMEAjiCzA4ZyTm5aXmhGWmpOY7J+bkMDAAAL4LJoY=
+  token: 007eJxTYJheVR1658DkoqJLTDJ/pq1u0nHX+7wqNC5RdYJUYZBfJqcCg5FBkolZsmFiSmpaiomFqaWFmXFyillaopmxuVFysolJoO6t9IZARoazs+eyMDJAIIgvwOCckZiXl5oTlpmSmu+cmJPDwAAAn0MjKQ==
   channelName: ChannelVideoCall
