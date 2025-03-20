@@ -1,58 +1,63 @@
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using AgoraChat;
 using AgoraChat.MessageBody;
-using UnityEngine;
 
 public class AgoraChatManager : MonoBehaviour, IChatManagerDelegate, IConnectionDelegate
 {
-    private TMP_Text messageList;
-    [SerializeField] string userId = "";
-    [SerializeField] string token = ""; 
-    [SerializeField] string appKey = "";
+    [SerializeField] private TMP_Text messageList;
+    [SerializeField] private Button joinButton;
+    [SerializeField] private Button sendButton;
+    [SerializeField] private TMP_InputField messageInput;
+    [SerializeField] private TMP_InputField targetUserIdInput;
+    [SerializeField] private AgoraChatConfig chatConfig;
+
     private bool isJoined = false;
-    SDKClient agoraChatClient;
-    
+    private SDKClient agoraChatClient;
+
     void Start()
     {
-        messageList = GameObject.Find("ChatScrollView/Viewport/Content/MessageList").GetComponent<TextMeshProUGUI>();
-        messageList.text = "";
-        
-        GameObject button = GameObject.Find("JoinButton");
-        button.GetComponent<Button>().onClick.AddListener(JoinLeave);
-        button = GameObject.Find("SendButton");
-        button.GetComponent<Button>().onClick.AddListener(SendMessage);
+        joinButton.onClick.AddListener(JoinLeave);
+        sendButton.onClick.AddListener(SendMessage);
         SetupChatSDK();
+
+        messageList.text = "";
+        joinButton.GetComponentInChildren<TMP_Text>().text = "Join";
+        
+        targetUserIdInput.text = "";
     }
-    
+
     void SetupChatSDK()
     {
-        if (appKey == "")
+        if (string.IsNullOrEmpty(chatConfig.AppKey))
         {
-            Debug.Log("You should set your appKey first!");
+            Debug.Log("You should set your appKey in AgoraChatConfig!");
             return;
         }
-        Options options = new Options(appKey);
+
+        Options options = new Options(chatConfig.AppKey);
         options.UsingHttpsOnly = true;
         options.DebugMode = true;
         agoraChatClient = SDKClient.Instance;
         agoraChatClient.InitWithOptions(options);
+        agoraChatClient.ChatManager.AddChatManagerDelegate(this);
     }
 
     public void OnMessagesReceived(List<Message> messages)
     {
-        foreach (Message msg in messages) 
+        foreach (Message msg in messages)
         {
             if (msg.Body.Type == MessageBodyType.TXT)
             {
                 TextBody txtBody = msg.Body as TextBody;
-                string Msg = msg.From + ":" + txtBody.Text;
-                DisplayMessage(Msg, false);
+                string Msg = msg.From + ": " + txtBody.Text;
+                DisplayMessage(Msg, false, msg.From);
             }
         }
     }
-    
+
     public void JoinLeave()
     {
         if (isJoined)
@@ -62,7 +67,7 @@ public class AgoraChatManager : MonoBehaviour, IChatManagerDelegate, IConnection
                 {
                     Debug.Log("Logout succeed");
                     isJoined = false;
-                    GameObject.Find("JoinButton").GetComponentInChildren<TextMeshProUGUI>().text = "Join";
+                    joinButton.GetComponentInChildren<TMP_Text>().text = "Join";
                 },
                 onError: (code, desc) =>
                 {
@@ -71,12 +76,12 @@ public class AgoraChatManager : MonoBehaviour, IChatManagerDelegate, IConnection
         }
         else
         {
-            agoraChatClient.LoginWithAgoraToken(userId, token, callback: new CallBack(
+            agoraChatClient.LoginWithAgoraToken(chatConfig.UserId, chatConfig.Token, callback: new CallBack(
                 onSuccess: () =>
                 {
                     Debug.Log("Login succeed");
                     isJoined = true;
-                    GameObject.Find("JoinButton").GetComponentInChildren<TextMeshProUGUI>().text = "Leave";
+                    joinButton.GetComponentInChildren<TMP_Text>().text = "Leave";
                 },
                 onError: (code, desc) =>
                 {
@@ -87,19 +92,28 @@ public class AgoraChatManager : MonoBehaviour, IChatManagerDelegate, IConnection
 
     public void SendMessage()
     {
-        string Msg = GameObject.Find("message").GetComponent<TMP_InputField>().text;
-        if (Msg == "" || userId == "")
+        string msgText = messageInput.text.Trim();
+        string targetUserId = targetUserIdInput.text.Trim();
+
+        if (string.IsNullOrEmpty(msgText) || string.IsNullOrEmpty(targetUserId))
         {
-            Debug.Log("You did not type your message");
+            Debug.Log("You did not type your message or target user ID");
             return;
         }
-        Message msg = Message.CreateTextSendMessage(userId, Msg);
-        DisplayMessage(Msg, true);
+        
+        if (!isJoined)
+        {
+            Debug.Log("You must join the chat before sending a message");
+            return;
+        }
+
+        Message msg = Message.CreateTextSendMessage(targetUserId, msgText);
+        DisplayMessage("Me: " + msgText, true);
         agoraChatClient.ChatManager.SendMessage(ref msg, new CallBack(
             onSuccess: () =>
             {
                 Debug.Log($"Send message succeed");
-                GameObject.Find("message").GetComponent<TMP_InputField>().text = "";
+                messageInput.text = "";
             },
             onError: (code, desc) =>
             {
@@ -107,30 +121,24 @@ public class AgoraChatManager : MonoBehaviour, IChatManagerDelegate, IConnection
             }));
     }
 
-    public void DisplayMessage(string messageText, bool isSentMessage)
+    public void DisplayMessage(string messageText, bool isSentMessage, string senderId = null)
     {
         if (isSentMessage)
         {
-            messageList.text += "<align=\"right\"><color=black><mark=#dcf8c655 padding=\"10, 10, 0, 0\">" + messageText + "</color></mark>\n";
+            messageList.text += $"<align=\"right\"><color=black><mark=#dcf8c655 padding=\"10, 10, 0, 0\">{messageText}</color></mark>\n";
         }
         else
         {
-            messageList.text += "<align=\"left\"><color=black><mark=#ffffff55 padding=\"10, 10, 0, 0\">" + messageText + "</color></mark>\n";
+            messageList.text += $"<align=\"left\"><color=black><mark=#ffffff55 padding=\"10, 10, 0, 0\">{messageText}</color></mark>\n";
         }
     }
-    
+
     void OnApplicationQuit()
     {
         agoraChatClient.ChatManager.RemoveChatManagerDelegate(this);
         agoraChatClient.Logout(true, callback: new CallBack(
-            onSuccess: () => 
-            {
-                Debug.Log("Logout succeed");
-            },
-            onError: (code, desc) => 
-            {
-                Debug.Log($"Logout failed, code: {code}, desc: {desc}");
-            }));
+            onSuccess: () => Debug.Log("Logout succeed"),
+            onError: (code, desc) => Debug.Log($"Logout failed, code: {code}, desc: {desc}")));
     }
 
 
