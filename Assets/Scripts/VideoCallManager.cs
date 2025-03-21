@@ -17,7 +17,6 @@ public class VideoCallManager : MonoBehaviour
     
     private uint cameraUid = 0;
     private uint screenUid = 1;
-    public uint ScreenUid => screenUid;
 
     private void Start()
     {
@@ -71,11 +70,8 @@ public class VideoCallManager : MonoBehaviour
 
         rtcEngine.JoinChannel(agoraConfig.Token, agoraConfig.ChannelName, "", cameraUid);
         Debug.Log("Joining channel: " + agoraConfig.ChannelName + " UID camera: " + cameraUid);
-
-        VideoSurface videoSurface = localVideo.gameObject.AddComponent<VideoSurface>();
-        videoSurface.SetForUser(cameraUid, agoraConfig.ChannelName);
-        videoSurface.SetEnable(true);
-        videoSurface.transform.rotation = Quaternion.Euler(0, 0, 180);
+        
+        VideoCallEventHandler.MakeVideoView(cameraUid);
     }
     
     private void LeaveChannel()
@@ -156,11 +152,6 @@ public class VideoCallManager : MonoBehaviour
             rtcEngine.Dispose();
             rtcEngine = null;
         }
-    }
-
-    public Transform GetLocalVideoTransform()
-    {
-        return localVideo.transform.parent;
     }
 
     public string GetChannelName()

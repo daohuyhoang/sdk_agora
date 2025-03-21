@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efc6baa7f3e06e342b326fee80f069d9, type: 3}
   m_Name: AgoraChatConfig
   m_EditorClassIdentifier: 
-  userId: hoang
-  token: 007eJxTYDApKtLYcNrt77rQBfzHJPKl08RCvr1S+uAx0+a0u979bdMVGIwMkkzMkg0TU1LTUkwsTC0tzIyTU8zSEs2MzY2Sk01M5lbfTm8IZGQ4+vEWCyMDKwMjEIL4KgzJlkapSWbmBroGJuZGuoaGaQa6lknmprrmxsbJlmkp5ikWRhYAqRcoSQ==
+  userId: lisa
+  token: 007eJxTYOC2/XfFeL3K46u/+W+6Rkf2FfBMr7dvNriXtuLfrQ8vDuQqMBgZJJmYJRsmpqSmpZhYmFpamBknp5ilJZoZmxslJ5uYKD2/k94QyMjgwZTGxMjAysAIhCC+CkOKuXGShXGSga6BibmRrqFhmoGuhXmaua6hsWlysrmJZZK5uTEAKVcoSw==
   appKey: 611313707#1514329
